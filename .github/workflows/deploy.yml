@@ -14,7 +14,7 @@ on:
 # This job is named "test" and will run on an "ubuntu-latest" virtual environment. Ubuntu is pre-configured and provided for Actions.
 jobs:
   test:
-    if: github.event_name == 'pull request'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
 
@@ -39,7 +39,7 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-        
+
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
 
