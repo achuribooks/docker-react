@@ -1,14 +1,39 @@
+# Specifies name of workflow in the repo's Action's tab
 name: Deploy Frontend
+
+# Defines when Action should run. Action is triggered by a push event to the main branch of the repo.
 on:
   push:
     branches:
       - main
 
+# A job is a collection of steps that run on a certain "runner" (server or machine that executes tasks in an Actions workflow--in this case, ubuntu).
+# This job is named "build" and will run on an "ubuntu-latest" virtual environment. Ubuntu is pre-configured and provided for Actions.
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
+    # Checks out code from repo.
       - uses: actions/checkout@v3
+    # Authenticates Docker registry through secrets.
       - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+    # Builds Docker image.
       - run: docker build -t achuribooks/docker-react -f Dockerfile.dev .
+    # Runs tests in specified container file via Node.js, sets environment variable (-e) of "CI" (continuous integration) to "true," supressing certain features, like prompts.
       - run: docker run -e CI=true achuribooks/docker-react npm test
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: frontend
+          environment_name: frontend-env
+          existing_bucket_name: elasticbeanstalk-us-east-1-140023362796
+          region: us-east-1
+          version_label: ${{ github.sha }}
+          deployment_package: deploy.zip
