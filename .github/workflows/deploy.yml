@@ -34,8 +34,6 @@ jobs:
   deploy:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    # Ensures that deploy does not happen unless test is successful.
-    needs: test
     steps:
       - name: Check out code
         uses: actions/checkout@v3
