@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          I HAVE MADE PROGRESSO SOUP!
+          I HAVE MADE PROGRESSO SOUP! Feature branch change.
         </p>
         <a
           className="App-link"
